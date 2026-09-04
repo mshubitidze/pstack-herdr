@@ -124,6 +124,9 @@ the full rules and playbooks live in [`skills/poteto-mode/SKILL.md`](./skills/po
 | [`/teach`](./skills/teach/SKILL.md) | you want to actually understand a change or subsystem, not just have it summarized. runs how + why and weaves one plain explanation, built up diagram by diagram. |
 | [`/tdd`](./skills/tdd/SKILL.md) | you're fixing a bug and there's a cheap local test path. write the failing test first, then the fix. |
 | [`/no-comments`](./skills/no-comments/SKILL.md) | strip comments before review; spawns Comment Sicko, fixes accepted findings, offers encodings for claimed constraints. |
+| [`/deslop`](./skills/deslop/SKILL.md) | strip AI slop from code before commit. the code-side counterpart to `unslop`. |
+| [`/control-cli`](./skills/control-cli/SKILL.md) | drive, inspect, and profile an interactive CLI or TUI through a Herdr pane. |
+| [`/control-ui`](./skills/control-ui/SKILL.md) | drive and inspect a web, IDE, or Electron UI with `agent-browser`, CDP for deep instrumentation. |
 | [`/typescript-best-practices`](./skills/typescript-best-practices/SKILL.md) | you're reading or editing typescript. grounds the type-system-discipline principle in syntax. |
 | [`/figure-it-out`](./skills/figure-it-out/SKILL.md) | no bundled playbook fits. designs a rigorous, auditable playbook for the task. |
 | [`/show-me-your-work`](./skills/show-me-your-work/SKILL.md) | you want a reviewable decision trail. logs decisions to a tsv you can commit. |
@@ -232,10 +235,9 @@ two executables, both on `PATH`, both used by every delegate regardless of which
 - **`herdr`** spawns delegates and drives terminal surfaces. the contract is [`references/delegation.md`](./skills/poteto-mode/references/delegation.md).
 - **`agent-browser`** drives browser and Electron surfaces. the contract is [`references/control.md`](./skills/poteto-mode/references/control.md).
 
-two skills `poteto-mode` routes to but does not bundle. both degrade to asking for the same outcome in plain words:
+one skill `poteto-mode` routes to but does not bundle:
 
-- **`simplify`** strips slop from code before commit, the way `unslop` strips it from prose.
-- **`writing-for-agents`** owns SKILL.md structure and agent-facing prose.
+- **`writing-for-agents`** owns SKILL.md structure and agent-facing prose. it replaces cursor's built-in `create-skill`, which is the one dependency with no portable source.
 
 ## what changed in this fork
 
@@ -243,7 +245,7 @@ upstream targets Cursor. this fork targets Herdr plus Pi and Claude Code. the su
 
 - **delegation** goes through Herdr panes rather than Cursor's `Task` tool. one contract owns the mechanics; skills name a role and a posture. cross-vendor panels are real here, since a panel can mix `pi` and `claude` delegates.
 - **machine-read output comes back as files**, not scraped pane text. every agent kind wraps its output in different chrome.
-- **control surfaces** are Herdr and `agent-browser` instead of `control-cli` and `control-ui`, which upstream names but never shipped.
+- **`deslop`, `control-cli` and `control-ui` are vendored in.** upstream names them but ships them in `cursor-team-kit`. they carry no cursor coupling, so they are copied here and their harnesses retargeted at Herdr and `agent-browser`.
 - **cloud-scale playbooks are gone.** orchestrate, autopilot-full and autopilot-stack assumed fleets of Cursor cloud agents. so are `watch-pr`, `benny`, `make-bot-ui` and the worktree-cleanup playbook. no TypeScript remains.
 - **Origin and Graphite branches removed.** every PR operation is `gh`.
 - **review-bot triage** is retargeted from Bugbot to whatever bot reviews your PRs.

@@ -18,7 +18,7 @@ Answer these from the codebase and only ask the user what you cannot observe:
 
 - **Surface:** what does a user actually touch? A web UI, a CLI/TUI, a desktop app, an API, a mobile app, a library? A repo can have several; pick the primary one and note the rest.
 - **Run:** how does the app start locally? Prefer the repo's own documented dev command (package scripts, Makefile, README quickstart). Note ports, env vars, seed data, auth.
-- **Drive:** how can an agent interact with it programmatically? Existing harnesses first, such as Playwright or Cypress specs, expect scripts, PTY helpers, curl-able endpoints, or a debug port. Only then fall back to the standard harnesses in `references/control.md` of the `poteto-mode` skill. `agent-browser` for web and Electron, Herdr's pane commands for CLI and TUI, plain HTTP for services.
+- **Drive:** how can an agent interact with it programmatically? Existing harnesses first, such as Playwright or Cypress specs, expect scripts, PTY helpers, curl-able endpoints, or a debug port. Only then fall back to the standard control skills. **control-ui** for web and Electron, **control-cli** for CLI and TUI, plain HTTP for services.
 - **Observe:** what evidence can be captured? Screenshots, terminal transcripts, response bodies, logs, exit codes, DB state.
 - **Isolate:** can two instances run side by side (ports, data dirs, profiles)? If not, say so in the generated skill: refusing to double-drive a shared instance beats corrupting the user's session.
 
