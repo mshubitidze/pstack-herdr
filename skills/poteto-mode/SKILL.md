@@ -86,11 +86,15 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 ## Subagents
 
-**Use `subagent_type: "poteto-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). `/poteto-mode` and `poteto-agent` route through the same wrapper. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own `subagent_type` for diverse-model review; respect what the skill prescribes, don't override to `poteto-agent`.
+**Every delegate you spawn follows the delegation contract in `references/delegation.md`.** It owns the mechanics. How to split a pane, which agent kind reaches which models, how output comes back, how to fan out and wait, and how read-only is enforced. Read it before your first spawn in a task and don't restate its commands in your reply.
 
-**Defaults for every `Task` call.** `run_in_background: true`, agent mode (readonly strips MCP), file pointers not inlined context, explicit model per role (configurable via `/setup-pstack`; defaults `grok-4.6-fast-xhigh` for code, `claude-fable-5-1-thinking-max` for prose and judgment). Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to your strongest judgment model (`claude-fable-5-1-thinking-max`) when the task needs judgment or the intent is vague, and to your strongest instruction-following model (`claude-fable-5-1-thinking-max`) when the work is a precisely specified sequence of steps to execute to the letter; trivial mechanical edits go to your fast code model. Per-role lines in the `/setup-pstack` rule override these defaults and the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`); a role with no line keeps its default, and a role line of `inherit-parent` or `auto` runs that role on the parent chat model (omit Task `model`).
+**A code-writing delegate reads the `poteto-mode` skill in full before it starts**, including the Principles index. Say so in its brief. A delegate that skips that read drifts. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`, `arena`, `architect`) prescribe their own panel composition for diverse-model review. Respect what the skill prescribes.
 
-You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. Interrupt-chained resumes silently drop directives, so fire a fresh subagent with consolidated scope rather than trusting a "done" summary. A second opinion is the same prompt against a different model. Agreement is high-signal.
+**Tier code delegates by difficulty.** The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to your strongest judgment model when the task needs judgment or the intent is vague, and to your strongest instruction-following model when the work is a precisely specified sequence to execute to the letter. Trivial mechanical edits go to your fast code model. The roster resolves each role to an actual model, and a role with no roster line keeps the default named in the skill that owns it.
+
+Briefs carry file pointers, never inlined dumps (**principle-guard-the-context-window**).
+
+You own every delegate's work. Review the diff and write your own summary, don't pass through what it said. A second opinion is the same prompt against a different model. Agreement is high-signal.
 
 ## Writing the reply
 
