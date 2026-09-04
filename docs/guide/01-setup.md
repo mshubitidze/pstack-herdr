@@ -7,7 +7,7 @@ In this page you install the plugin, pick which models pstack uses, and run your
 Install the skills into your agent's skills directory:
 
 ```sh
-npx skills@latest add mshubitidze/plugins
+npx skills@latest add mshubitidze/pstack
 ```
 
 pstack also expects two executables on `PATH`. `herdr` drives delegation and terminal surfaces, and `agent-browser` drives browser surfaces.

@@ -19,10 +19,10 @@ fork it. improve it. make it yours. PRs are welcome!
 ## install
 
 ```bash
-npx skills@latest add mshubitidze/plugins
+npx skills@latest add mshubitidze/pstack
 ```
 
-pstack needs two executables on `PATH`. [`herdr`](https://github.com/) drives delegation and terminal surfaces, and `agent-browser` (`npm i -g agent-browser && agent-browser install`) drives browser surfaces.
+pstack needs two executables on `PATH`. `herdr` drives delegation and terminal surfaces, and `agent-browser` (`npm i -g agent-browser && agent-browser install`) drives browser surfaces.
 
 ## get started
 
