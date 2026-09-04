@@ -4,13 +4,31 @@ In this page you install the plugin, pick which models pstack uses, and run your
 
 ## Install the plugin
 
-In a Cursor chat, run:
+Install the skills into your agent's skills directory:
 
-```text
-/add-plugin pstack
+```sh
+npx skills@latest add mshubitidze/plugins
 ```
 
-Cursor confirms the plugin is installed.
+pstack also expects two executables on `PATH`. `herdr` drives delegation and terminal surfaces, and `agent-browser` drives browser surfaces.
+
+## Keep the mode sticky (optional)
+
+`/poteto-mode` is a mode, so it should stay on across turns. Add its reminder hook to `settings.json` to get that:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      { "matcher": "", "hooks": [
+        { "type": "command", "command": "<path-to>/pstack/hooks/poteto-mode-reminder.sh" }
+      ]}
+    ]
+  }
+}
+```
+
+The hook stays silent until `/poteto-mode` creates its marker file, and goes quiet again when you opt out. Skip this and the mode still works; it just stops reminding the agent between turns.
 
 ## Pick your models
 
@@ -30,9 +48,9 @@ You might be wondering what happens if you use Auto. Set a role to `inherit-pare
 
 At the end of setup, `/setup-pstack` looks for a way to prove app behavior in your project, either a `verify-*` skill or an existing harness. If it finds neither, it offers once to generate one with [`/create-verification-skill`](../../skills/create-verification-skill/SKILL.md).
 
-Say yes and it writes `.cursor/skills/verify-<app>/`, a project-local skill that teaches agents to drive your app the way a user does. It proves the skill works once before handing it over. Say no and setup moves on. You can run `/create-verification-skill` yourself any time. [Verify and ship](./06-verify-and-ship.md#create-a-project-verification-skill) covers when it earns its place.
+Say yes and it writes `verify-<app>/` into your project's skills directory, a project-local skill that teaches agents to drive your app the way a user does. It proves the skill works once before handing it over. Say no and setup moves on. You can run `/create-verification-skill` yourself any time. [Verify and ship](./06-verify-and-ship.md#create-a-project-verification-skill) covers when it earns its place.
 
-After setup, start a new chat. The model rule applies to new sessions.
+After setup, start a new chat. The roster applies to new sessions.
 
 ## Run your first task
 

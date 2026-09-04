@@ -4,19 +4,23 @@ i'm [poteto](https://x.com/poteto). i'm not a president or ceo, but i've worked 
 
 there's a growing sense that ai writes too much slop code. i agree. i don't want to ship like a team of twenty slop artists. throughput without quality is not a goal i aspire to. if you want to go fast, go deep first. 
 
-**pstack is my answer.** these are the same skills i use everyday to ship high quality code at Cursor. this turns cursor into a real engineering team. the goal is not to maximize loc, in fact it's the opposite. pstack helps you write less, but higher quality code.
+> **this is a fork.** upstream pstack is built for Cursor. this fork runs the same workflows on Herdr, Pi, and Claude Code, with no Cursor dependency. see [`what changed in this fork`](#what-changed-in-this-fork). everything below is poteto's, and the credit is his.
+
+**pstack is my answer.** these are the same skills i use everyday to ship high quality code. this turns your agent into a real engineering team. the goal is not to maximize loc, in fact it's the opposite. pstack helps you write less, but higher quality code.
 
 **pstack gives you fearless parallelism.** when you can go deep on one agent and trust it to write good, verifiable code, you can truly parallelize with confidence. start multiple agents up with `poteto-mode` and trust that they'll apply rigorous engineering principles to their work.
 
-**cursor gives you the best of all worlds.** every frontier model has its strengths and weaknesses. use any model with pstack. in fact, many of my skills use multi-model workflows to take advantage of each model's unique strengths.
+**many models, one workflow.** every frontier model has its strengths and weaknesses. many of these skills use multi-model workflows to take advantage of each one. delegates run as real agents in Herdr panes, so a review panel can span vendors rather than one provider's lineup.
 
 fork it. improve it. make it yours. PRs are welcome! 
 
 ## install
 
 ```bash
-/add-plugin pstack
+npx skills@latest add mshubitidze/plugins
 ```
+
+pstack needs two executables on `PATH`. [`herdr`](https://github.com/) drives delegation and terminal surfaces, and `agent-browser` (`npm i -g agent-browser && agent-browser install`) drives browser surfaces.
 
 ## get started
 
@@ -27,7 +31,7 @@ two steps:
 
 new here? the [pstack guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs.
 
-that's it. the other skills are situational; the mode skill uses them for you as needed. out of the box the mode splits work by model strength: precisely-specified code, prose, and judgment go to fable 5.1, while fast mechanical code goes to grok. the default panel is fable 5.1 / sol / grok / opus 5. [`/setup-pstack`](./skills/setup-pstack/SKILL.md) changes any of it.
+that's it. the other skills are situational; the mode skill uses them for you as needed. the mode splits work by model strength, sending prose and judgment to your strongest judgment model and fast mechanical code to a cheap one. [`/setup-pstack`](./skills/setup-pstack/SKILL.md) detects what you can actually reach and writes the roster.
 
 ## usage
 
@@ -86,7 +90,7 @@ the full rules and playbooks live in [`skills/poteto-mode/SKILL.md`](./skills/po
 
 [`/poteto-mode`](./skills/poteto-mode/SKILL.md) is also a sticky mode: once entered it stays on across turns, applying itself when a playbook matches or the task needs rigor and staying out of the way otherwise. opt out any time by saying so.
 
-[`/poteto-mode`](./skills/poteto-mode/SKILL.md) works extremely well with cursor's `/loop` command. you can make cursor work for many hours without sacrificing rigor.
+[`/poteto-mode`](./skills/poteto-mode/SKILL.md) works extremely well with your harness's loop command. you can run for many hours without sacrificing rigor.
 
 ## skills
 
@@ -221,19 +225,33 @@ twenty-one short skills, one principle each. `poteto-mode` indexes them inline a
 
 </details>
 
-## not shipped here
+## external dependencies
 
-a few things `poteto-mode` references but doesn't bundle:
+two executables, both on `PATH`, both used by every delegate regardless of which agent kind it is:
 
-- `/deslop` and the `deslop` skill ship in the `cursor-team-kit` plugin.
-- `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too.
-- `/create-skill` is a cursor built-in. cursor also ships a built-in `/babysit`; inside `poteto-mode`, the [babysit playbook](./skills/poteto-mode/playbooks/babysit.md) supersedes it for pr-status requests.
+- **`herdr`** spawns delegates and drives terminal surfaces. the contract is [`references/delegation.md`](./skills/poteto-mode/references/delegation.md).
+- **`agent-browser`** drives browser and Electron surfaces. the contract is [`references/control.md`](./skills/poteto-mode/references/control.md).
 
-install `cursor-team-kit` alongside pstack if you want the full set.
+two skills `poteto-mode` routes to but does not bundle. both degrade to asking for the same outcome in plain words:
+
+- **`simplify`** strips slop from code before commit, the way `unslop` strips it from prose.
+- **`writing-for-agents`** owns SKILL.md structure and agent-facing prose.
+
+## what changed in this fork
+
+upstream targets Cursor. this fork targets Herdr plus Pi and Claude Code. the substantive differences:
+
+- **delegation** goes through Herdr panes rather than Cursor's `Task` tool. one contract owns the mechanics; skills name a role and a posture. cross-vendor panels are real here, since a panel can mix `pi` and `claude` delegates.
+- **machine-read output comes back as files**, not scraped pane text. every agent kind wraps its output in different chrome.
+- **control surfaces** are Herdr and `agent-browser` instead of `control-cli` and `control-ui`, which upstream names but never shipped.
+- **cloud-scale playbooks are gone.** orchestrate, autopilot-full and autopilot-stack assumed fleets of Cursor cloud agents. so are `watch-pr`, `benny`, `make-bot-ui` and the worktree-cleanup playbook. no TypeScript remains.
+- **Origin and Graphite branches removed.** every PR operation is `gh`.
+- **review-bot triage** is retargeted from Bugbot to whatever bot reviews your PRs.
+- **the roster** lives at `~/.agents/pstack-models.md` instead of a Cursor rule file, and maps each role to an agent kind plus model arguments.
 
 ## why are there no planning skills?
 
-cursor already has a great plan mode which works great with pstack. but personally, i don't believe in planning. the best spec is code. if you do want to make a plan, [`/poteto-mode`](./skills/poteto-mode/SKILL.md) covers it, but it's not a default. 
+most harnesses already have a plan mode, and it works great with pstack. but personally, i don't believe in planning. the best spec is code. if you do want to make a plan, [`/poteto-mode`](./skills/poteto-mode/SKILL.md) covers it, but it's not a default. 
 
 ## make it yours
 

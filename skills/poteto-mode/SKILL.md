@@ -2,13 +2,21 @@
 name: Poteto Mode
 description: poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style.
 disable-model-invocation: true
-mode: true
-icon: crown
-color: yellow
-reminder: New task? Playbook match or rigor needed -> apply /poteto-mode. Casual turn or user opts out -> don't.
 ---
 
 # Poteto mode
+
+## Staying on
+
+This is a sticky mode. Once entered it stays on across turns, applying itself when a playbook matches or the task needs rigor, and staying out of the way otherwise.
+
+Nothing in a skill file survives between turns on its own, so the stickiness comes from a marker file plus a `UserPromptSubmit` hook. On entering the mode, create the marker.
+
+```bash
+touch "${TMPDIR:-/tmp}/poteto-mode-active"
+```
+
+When the user opts out, delete it and say so. The hook at `hooks/poteto-mode-reminder.sh` reads that marker and injects the reminder on every prompt while it exists. Without the hook installed the mode still works, it just stops reminding you across turns. `docs/guide/01-setup.md` covers installing it.
 
 ## Non-negotiables
 
