@@ -22,7 +22,7 @@ Skip when the conversation is trivial, off-topic, or already covered by an exist
 
 ### 1. Locate the active transcript
 
-The parent finds its own transcript file before fanning out. The system prompt names the active workspace's `agent-transcripts/` directory; use that path. Do not glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
+The parent finds its own transcript file before fanning out. Under Claude Code these live at `~/.claude/projects/<slugified-cwd>/<session-id>.jsonl`. For any agent Herdr started, `herdr agent list` reports the session path or id directly, which beats guessing. Scope the search to this project. Never glob across every project directory, since that reads private chats from unrelated work.
 
 ```bash
 ls -t <agent-transcripts>/*.jsonl <agent-transcripts>/*/*.jsonl <agent-transcripts>/*/subagents/*.jsonl 2>/dev/null | head -10
@@ -34,19 +34,19 @@ For each candidate, read the first JSONL line and check that `message.content[0]
 
 ### 2. Spawn three reviewers in parallel
 
-One message, three `Task` calls, `subagent_type: generalPurpose`, explicit `model:` on each, agent mode (`readonly: false`). Reviewers need MCP access for context lookups (tickets, chat threads, observability traces referenced in the transcript); readonly strips MCPs. The prompt forbids file writes; the parent applies edits.
+One wave, three delegates. Spawn per the delegation contract (the `poteto-mode` skill, `references/delegation.md`). Read-only posture on each. Reviewers keep MCP access for context lookups (tickets, chat threads, observability traces referenced in the transcript). The prompt forbids file writes beyond the findings file; the parent applies edits.
 
-| Lens | `model` | Prompt template |
+| Lens | Role | Prompt template |
 |---|---|---|
-| Judgment | your configured reflect-judgment model (default `claude-fable-5-1-thinking-max`) | `references/judgment-reviewer.md` |
-| Tooling | your configured reflect-tooling model (default `gpt-5.6-sol-max`) | `references/tooling-reviewer.md` |
-| Divergent | your configured reflect-judgment model (default `claude-fable-5-1-thinking-max`) | `references/divergent-reviewer.md` |
+| Judgment | `reflect judgment` | `references/judgment-reviewer.md` |
+| Tooling | `reflect tooling` | `references/tooling-reviewer.md` |
+| Divergent | `reflect divergent` | `references/divergent-reviewer.md` |
 
-Pass each template verbatim, substituting the transcript path or digest where marked. Reviewers return findings in the `Task` response body.
+Pass each template verbatim, substituting the transcript path or digest where marked. Each reviewer writes its findings to its own file and replies with that path.
 
 ### 3. Synthesize
 
-One `Task` call, `subagent_type: generalPurpose`, using your configured reflect-judgment model (default `claude-fable-5-1-thinking-max`), agent mode (`readonly: false`). The synthesizer's quality check includes spot-verifying citations, which can require MCP access; readonly strips MCPs. Use `references/synthesizer.md` verbatim, with each reviewer's full output inlined where marked. The synthesizer returns a structured Accepted / Rejected / Backlog list.
+One delegate. Spawn per the delegation contract (the `poteto-mode` skill, `references/delegation.md`). Role `reflect synthesizer`, read-only posture. Its quality check spot-verifies citations, so it keeps MCP access. Use `references/synthesizer.md` verbatim, pointing it at each reviewer's findings file rather than inlining them. The synthesizer returns a structured Accepted / Rejected / Backlog list.
 
 ### 4. Structural enforcement check
 

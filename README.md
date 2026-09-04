@@ -178,13 +178,15 @@ automate-me:       /automate-me
 
 </details>
 
-## the `poteto-agent` and Comment Sicko subagents
+## the bundled personas
 
-pstack also ships a subagent that runs my style end to end. spawn it from a parent agent via [`subagent_type: "poteto-agent"`](./agents/poteto-agent.md). it reads `poteto-mode` in full, including its inline principles index, before doing any work. substituting `generalPurpose` skips that read and drifts.
+pstack ships two agent personas in [`agents/`](./agents/). they are brief sources, not registered subagent types. a delegate becomes one by having the file passed to it in full.
 
-[`/poteto-mode`](./skills/poteto-mode/SKILL.md) and [`subagent_type: "poteto-agent"`](./agents/poteto-agent.md) route through the same wrapper.
+[`poteto-agent`](./agents/poteto-agent.md) runs my style end to end. any code-writing delegate gets it, and it reads `poteto-mode` in full, including the inline principles index, before doing any work. a delegate that skips that read drifts.
 
-pstack also ships [Comment Sicko](./agents/comment-sicko.md), a read-only comment reviewer available as `subagent_type: "Comment Sicko"`. usually invoke it through [`/no-comments`](./skills/no-comments/SKILL.md), not directly.
+[Comment Sicko](./agents/comment-sicko.md) is a read-only comment reviewer. usually invoke it through [`/no-comments`](./skills/no-comments/SKILL.md), not directly.
+
+how delegates are actually spawned lives in one place, the delegation contract at [`references/delegation.md`](./skills/poteto-mode/references/delegation.md).
 
 ## principles
 

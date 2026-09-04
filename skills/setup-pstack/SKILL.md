@@ -1,65 +1,84 @@
 ---
 name: setup-pstack
-description: Configure which models pstack uses per role. Detects your available models and writes an always-applied rule that overrides the skill defaults. Use for /setup-pstack, "configure pstack models", or changing pstack's model choices.
+description: Configure which agent kind and model pstack uses per role. Detects the models you can actually reach and writes the roster every skill reads. Use for /setup-pstack, "configure pstack models", or changing pstack's model choices.
 ---
 
 # Setup pstack
 
-Write `~/.cursor/rules/pstack-models.mdc`, an always-applied rule that sets pstack's model per role. The skills read it and fall back to their inline defaults when a line is absent, so this is an override layer, not a requirement.
+Write `~/.agents/pstack-models.md`, the roster that maps each pstack role to an agent kind and a model. Every skill names a role and reads its value here. A role with no line falls back to the default named in the skill that owns it, so this is an override layer, not a requirement.
+
+The roster lives outside any one harness because delegates run as separate agents. See the delegation contract in the `poteto-mode` skill (`references/delegation.md`) for how a role becomes a running agent.
 
 ## Steps
 
-### 1. Detect available models
+### 1. Detect what you can reach
 
-Enumerate the model slugs you can pass to a `Task` subagent in this session; that is the dependable source. If Cursor also exposes a models API or CLI that lists the user's entitled models, prefer it for completeness. If you cannot detect any, ask the user to paste the slugs they have access to. Never write a real slug you have not confirmed is available. The aliases `inherit-parent` and `auto` are always valid even though they are not detected slugs.
+Enumerate real models, never guess them. Two sources cover the roster.
+
+```bash
+pi --list-models
+herdr agent 2>&1 | grep '^  kinds:'
+```
+
+`pi --list-models` prints every provider and model id that Pi can reach, which is the widest set. Claude models do not appear there. Reach those through the `claude` kind, whose aliases are `fable`, `opus`, `sonnet`, and `haiku`, plus any full model name the CLI accepts.
+
+Confirm a kind is installed before writing it into the roster. A roster line naming a kind that is not on `PATH` breaks every delegation that reads it.
 
 ### 2. Load current state
 
-The default role-to-model mapping is the rule shape shown in step 5 below. If `~/.cursor/rules/pstack-models.mdc` already exists, read it and treat its values as the current choices. Otherwise start from those defaults.
+If `~/.agents/pstack-models.md` exists, read it and treat its values as the current choices. Otherwise start from the skills' own defaults.
 
 ### 3. Map and confirm
 
-Show every role with its current model, marking any real slug not in the detected set as needing a choice. Ask whether to accept as-is or change specific roles, offering the detected models plus `inherit-parent` and `auto` (both mean: this role runs on the parent chat model, which is how Auto users stay on Auto) as the options. Prefer AskQuestion over free text. For panel roles (how critics, arena runners, architect runners, interrogate reviewers) the value is a list, and one subagent runs per entry, alias entries included, so the list length sets the count. `arena cross-judge pool` is also a list, but Arena selects one value from it whose model family differs from the parent's when possible. `swarm workers` is the default model for every worker unless a race or comparison assigns another model per arm.
+Show every role with its current value, marking anything you could not confirm in step 1. Ask whether to accept as-is or change specific roles. Prefer a structured multiple-choice question over free text.
+
+Panel roles (`how critics`, `arena runners`, `architect runners`, `interrogate reviewers`, `arena cross-judge pool`) take a list. One delegate runs per entry, so the list length sets the fan-out. Panels exist to disagree, so spread their entries across model families and warn the user when a panel would collapse to one.
+
+`swarm workers` is the default for every worker unless a race assigns a model per arm.
 
 ### 4. Validate
 
-Every real slug written must be in the detected set; `inherit-parent` and `auto` always pass. If a chosen real slug is not available, stop and ask again. A rule pointing at a model the user cannot use breaks every delegation that reads it.
+Every model written must have appeared in step 1's detection. If a chosen value is unavailable, stop and ask again.
 
-### 5. Write the rule
+### 5. Write the roster
 
-Write `~/.cursor/rules/pstack-models.mdc` with `alwaysApply: true` and one line per role, using the same labels poteto-mode uses. Overwrite the whole file so re-runs stay idempotent. Shape:
+Overwrite the whole file so re-runs stay idempotent. One line per role, in the form `role: <kind> <model args>`. The model args are passed verbatim after the `--` in `herdr agent start`.
 
 ```
----
-description: pstack per-role model choices (overrides skill defaults)
-alwaysApply: true
----
-# pstack model configuration. One line per role. Delete a line to fall back to the skill default.
-# `inherit-parent` or `auto` as a value: the role runs on the parent chat model (omit Task `model`). Alias entries in a panel list still count toward its fan-out.
-feature, refactoring: grok-4.6-fast-xhigh
-bug-fix: claude-fable-5-1-thinking-max
-perf-issue: claude-fable-5-1-thinking-max
-hillclimb: claude-fable-5-1-thinking-max
-judgment and prose: claude-fable-5-1-thinking-max
-hardest tasks: claude-fable-5-1-thinking-max
-how explorer: grok-4.6-fast-xhigh
-how explainer: claude-fable-5-1-thinking-max
-how critics: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-why investigators: grok-4.6-fast-xhigh
-why synthesizer: claude-fable-5-1-thinking-max
-reflect tooling: gpt-5.6-sol-max
-reflect judgment, divergent, synthesizer: claude-fable-5-1-thinking-max
-arena runners: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-arena cross-judge pool: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-swarm workers: grok-4.6-fast-xhigh
-architect runners: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-interrogate reviewers: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
+# pstack roster. One line per role. Delete a line to fall back to the skill default.
+# Form: role: <kind> <args passed after -- to herdr agent start>
+
+feature:                pi --model <provider>/<id>:<thinking>
+refactoring:            pi --model <provider>/<id>:<thinking>
+bug-fix:                claude --model <alias>
+perf-issue:             claude --model <alias>
+hillclimb:              claude --model <alias>
+judgment and prose:     claude --model <alias>
+hardest tasks:          claude --model <alias>
+
+how explorer:           pi --model <provider>/<id>:<thinking>
+how explainer:          claude --model <alias>
+how critics:            <one entry per critic, across families>
+
+why investigators:      pi --model <provider>/<id>:<thinking>
+why synthesizer:        claude --model <alias>
+
+reflect tooling:        pi --model <provider>/<id>:<thinking>
+reflect judgment:       claude --model <alias>
+reflect divergent:      claude --model <alias>
+reflect synthesizer:    claude --model <alias>
+
+arena runners:          <one entry per runner, across families>
+arena cross-judge pool: <one entry per candidate judge, across families>
+swarm workers:          pi --model <provider>/<id>:<thinking>
+architect runners:      <one entry per runner, across families>
+interrogate reviewers:  <one entry per reviewer, across families>
 ```
 
 ### 6. Confirm
 
-Tell the user the rule was written and that it applies to new sessions. Re-running this skill updates it.
+Tell the user the roster was written and that re-running this skill updates it.
 
 ### 7. Offer a verification skill (optional)
 
-Check whether the project has a way to drive the real app for proof (a `verify-*` skill, or an existing harness). If not, offer once: "want a project-local verification skill, so agents can drive the app the way a user does and prove changes work? I can generate one with /create-verification-skill." On yes, invoke `/create-verification-skill` (resolves wherever pstack is installed — workspace, user, or plugin). On no, move on without pushing.
+Check whether the project has a way to drive the real app for proof (a `verify-*` skill, or an existing harness). If not, offer once. "Want a project-local verification skill, so agents can drive the app the way a user does and prove changes work? I can generate one with /create-verification-skill." On yes, invoke `/create-verification-skill`. On no, move on without pushing.

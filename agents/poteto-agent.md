@@ -1,6 +1,6 @@
 ---
 name: poteto-agent
-description: Routing target for `/poteto-mode` and any request for poteto's style. Resume an existing `poteto-agent` for the conversation rather than spawning a sibling. Reads the `poteto-mode` skill's `SKILL.md` in full before any work, including its inline Principles index. Substituting `generalPurpose` skips that read and drifts.
+description: Brief for any code-writing delegate spawned under poteto's style. Passed in full to the delegate. Reads the `poteto-mode` skill's `SKILL.md` in full before any work, including its inline Principles index. A delegate that skips that read drifts.
 is_background: true
 ---
 
