@@ -1,10 +1,12 @@
 # pstack
 
+> **pstack is [poteto's](https://x.com/poteto) work**, published under MIT in [cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack). the skills, the playbooks, the principles and the writing below are all his.
+>
+> this repository is a port of it, imported at upstream `7314f72` and adapted to run on Herdr, Pi and Claude Code with no Cursor dependency. [what changed](#what-changed-in-this-port) lists every difference. if you use Cursor, install the original instead; it is better maintained and it is the source of truth.
+
 i'm [poteto](https://x.com/poteto). i'm not a president or ceo, but i've worked with millions of lines of code at Meta, Netflix, and Cursor. i'm also on the react core team where i help build and maintain react compiler.
 
 there's a growing sense that ai writes too much slop code. i agree. i don't want to ship like a team of twenty slop artists. throughput without quality is not a goal i aspire to. if you want to go fast, go deep first. 
-
-> **this is a fork.** upstream pstack is built for Cursor. this fork runs the same workflows on Herdr, Pi, and Claude Code, with no Cursor dependency. see [`what changed in this fork`](#what-changed-in-this-fork). everything below is poteto's, and the credit is his.
 
 **pstack is my answer.** these are the same skills i use everyday to ship high quality code. this turns your agent into a real engineering team. the goal is not to maximize loc, in fact it's the opposite. pstack helps you write less, but higher quality code.
 
@@ -239,13 +241,13 @@ one skill `poteto-mode` routes to but does not bundle:
 
 - **`writing-for-agents`** owns SKILL.md structure and agent-facing prose. it replaces cursor's built-in `create-skill`, which is the one dependency with no portable source.
 
-## what changed in this fork
+## what changed in this port
 
-upstream targets Cursor. this fork targets Herdr plus Pi and Claude Code. the substantive differences:
+imported from cursor/plugins at `7314f72`. upstream targets Cursor; this targets Herdr plus Pi and Claude Code. the substantive differences:
 
 - **delegation** goes through Herdr panes rather than Cursor's `Task` tool. one contract owns the mechanics; skills name a role and a posture. cross-vendor panels are real here, since a panel can mix `pi` and `claude` delegates.
 - **machine-read output comes back as files**, not scraped pane text. every agent kind wraps its output in different chrome.
-- **`deslop`, `control-cli` and `control-ui` are vendored in.** upstream names them but ships them in `cursor-team-kit`. they carry no cursor coupling, so they are copied here and their harnesses retargeted at Herdr and `agent-browser`.
+- **`deslop`, `control-cli` and `control-ui` are vendored in** from `cursor-team-kit`, also poteto's and also MIT. upstream pstack names them but ships them separately. they carry no cursor coupling, so they are copied here and their harnesses retargeted at Herdr and `agent-browser`.
 - **cloud-scale playbooks are gone.** orchestrate, autopilot-full and autopilot-stack assumed fleets of Cursor cloud agents. so are `watch-pr`, `benny`, `make-bot-ui` and the worktree-cleanup playbook. no TypeScript remains.
 - **Origin and Graphite branches removed.** every PR operation is `gh`.
 - **review-bot triage** is retargeted from Bugbot to whatever bot reviews your PRs.
@@ -263,6 +265,19 @@ type [`/automate-me`](./skills/automate-me/SKILL.md). it mines your recent trans
 
 models are configurable too. type [`/setup-pstack`](./skills/setup-pstack/SKILL.md). it detects the models you have access to and writes a small always-applied rule mapping each role (code, judgment, the review panels) to a model. every skill reads it and falls back to sensible defaults when the rule is absent, so you override only what you want.
 
+
+## staying current with upstream
+
+there is no automated sync, on purpose. this port rewrote the delegation layer, so most upstream commits would conflict rather than merge.
+
+when you want something poteto has shipped since `7314f72`, read the diff and port it by hand:
+
+```sh
+gh repo clone cursor/plugins /tmp/pstack-upstream
+git -C /tmp/pstack-upstream log --oneline 7314f72..HEAD -- pstack
+```
+
+update the SHA in this README when you do.
 
 ## license
 
