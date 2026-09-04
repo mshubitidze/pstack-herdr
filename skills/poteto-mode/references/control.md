@@ -2,7 +2,7 @@
 
 Proving a change works means driving the real artifact the way a user does. This file names the harness for each surface. Skills say "drive the surface through its control harness" and point here.
 
-Both harnesses are executables on `PATH`. That matters, because verification usually runs inside a delegate, and a delegate can be any agent kind. An MCP server or a vendor plugin is available only to the kinds configured for it. A CLI is available to all of them.
+Both harnesses are executables on `PATH`. That matters because verification runs inside delegates, and a delegate can be any agent kind. An MCP server or vendor plugin reaches only the kinds configured for it; a CLI reaches all of them.
 
 | Surface | Harness |
 |---|---|

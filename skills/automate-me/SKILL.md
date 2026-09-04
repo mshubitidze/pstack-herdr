@@ -14,7 +14,7 @@ This skill orchestrates three others: an inline mining pass (see step 1), the **
 
 ### 0. Check for an existing skill
 
-Look recursively for `*-mode/SKILL.md` matching the user's handle, in the repo's skills directory and in the user-level store at `~/.agents/skills/`. Mode skills can live in a personal category directory, not only at the top level. If one exists, confirm intent with `AskQuestion` (unless they already said "update my skill" or similar):
+Look recursively for `*-mode/SKILL.md` matching the user's handle, in the repo's skills directory and in the user-level store at `~/.agents/skills/`. Mode skills can live in a personal category directory, not only at the top level. If one exists, confirm intent with a structured question (unless they already said "update my skill" or similar):
 
 - Update the existing skill (default for repeat runs)
 - Start fresh (rare; ask why before doing it)
@@ -41,7 +41,7 @@ Cross-check across slices before elevating a signal. Patterns seen in 2+ slices 
 
 ### 2. Ask the user directly
 
-Mining misses intent that hasn't come up yet. Use the `AskQuestion` tool (structured multi-choice) rather than asking the user to type from scratch. Lower cognitive load, higher hit rate.
+Mining misses intent that hasn't come up yet. Ask with a structured multiple-choice question rather than making the user type from scratch. Lower cognitive load, higher hit rate.
 
 Shape: one or two questions with 4-6 options each, `allow_multiple: true` for category questions. Start broad ("Which areas matter most?"), then follow up on selected areas with specific options. After the structured rounds, one free-form chat question catches anything the options missed.
 

@@ -48,7 +48,7 @@ Each role resolves to a kind and a model through the roster at `~/.agents/pstack
 | `pi` | Every OpenAI Codex and OpenCode Go model | `-- --model <provider>/<id>:<thinking>` |
 | `claude` | Fable, Opus, Sonnet, Haiku | `-- --model <alias>` |
 
-`pi` is the default kind. It covers the widest roster in one harness, and its `provider/id:thinking` form sets model and reasoning level in a single argument. Use `claude` when the roster names a Claude model for that role, which is the usual case for judgment and prose. Reach for another kind only when it buys something the roster cannot express.
+`pi` is the default kind, since it reaches the widest roster and sets model and reasoning level in one argument. Use `claude` when the roster names a Claude model, which is the usual case for judgment and prose.
 
 Cross-family diversity is the point of every panel. When a panel's roster entries would all resolve to one family, say so in the reply rather than pretending the panel was diverse.
 
@@ -65,7 +65,7 @@ Reply with only that path. No summary in the reply.
 
 Then read the file directly. Do not parse the pane.
 
-This is not about data loss. Pane reads are reliable and recover full multi-line responses. The problem is chrome. Claude prefixes the first line of a response with `⏺`, pi wraps output in box borders and appends a status bar carrying token counts and cost, and every kind renders differently. Parsing that across vendors is a maintenance trap, and it breaks silently when a harness changes its rendering.
+Not because reads lose data; they recover full multi-line responses. Because of chrome. Claude prefixes its first response line with `⏺`, pi wraps output in borders and a status bar, and every kind renders differently. Parsing that across vendors breaks silently when any one of them changes.
 
 Pane reads stay useful for three things. Checking whether a delegate is alive, inspecting one that stalled, and reading a short answer a human will look at anyway.
 
@@ -127,17 +127,13 @@ Readers and reviewers need no worktree. They share the parent's tree.
 
 ## Discipline
 
-Use `--no-focus` on every split. Background work never steals the operator's focus.
+Use `--no-focus` on every split, so background work never steals the operator's focus.
 
-Target panes by the id the split returned or by the agent's unique name. Never rely on the focused pane, which may belong to the operator or another client.
+Target panes by the id the split returned or by the agent's unique name, parsed out of the JSON response. Never rely on the focused pane, which may belong to the operator, and never copy an id from the examples here.
 
-Parse ids out of JSON responses. Never derive them from examples in this file.
+Close every pane you opened once its output is collected. Never close one you did not create.
 
-Close every pane you opened once its output is collected. Never close a pane, tab, or workspace you did not create.
-
-## You own the delegate's work
-
-Read the returned file. Review the diff yourself. Write your own summary. Passing a delegate's text through as your own report is how a bad result becomes your bad result.
+## Changing a delegate's scope
 
 An interrupt-chained resume drops directives silently. When scope changes, close the delegate and start a fresh one with the consolidated brief instead of correcting a running agent.
 
