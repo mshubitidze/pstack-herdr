@@ -111,7 +111,7 @@ Herdr has no read-only mode. A delegate is a full agent. Read-only is a posture 
 
 State the posture in the brief as well. Tool flags stop writes, the brief stops the delegate wasting a turn trying.
 
-Unlike Cursor's readonly, restricting tools here does not strip MCP access. The old warnings about readonly disabling MCP-backed investigators do not apply.
+Restricting write tools does not cost a delegate its MCP access, so an MCP-backed investigator can be read-only and still reach every server it needs.
 
 ## Writers get their own worktree
 
